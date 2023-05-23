@@ -32,6 +32,10 @@ icon = "📱"
 is_section = true
 
 [[pages]]
+path = "pages/post_caption_generator.py"
+name = "Post Caption Generator"
+
+[[pages]]
 path = "pages/content_plan_generator.py"
 name = "Content Plan Generator"
 
