@@ -32,6 +32,10 @@ icon = "📱"
 is_section = true
 
 [[pages]]
+path = "pages/content_plan_generator.py"
+name = "Content Plan Generator"
+
+[[pages]]
 name = "E-Commerce"
 icon = "🛒"
 is_section = true
