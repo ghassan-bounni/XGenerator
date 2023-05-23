@@ -1,0 +1,37 @@
+[theme]
+base="dark"
+primaryColor="#2e379c"
+
+[[pages]]
+path = "app.py"
+name = "Explore"
+
+[[pages]]
+name = "Articles and Blogs"
+icon = "📝"
+is_section = true
+
+[[pages]]
+path = "pages/article_generator.py"
+name = "Article Generator"
+
+
+[[pages]]
+path = "pages/blog_title_generator.py"
+name = "Blog Title Generator"
+
+
+[[pages]]
+name = "Ads and Marketing"
+icon = "📈"
+is_section = true
+
+[[pages]]
+name = "Social Media"
+icon = "📱"
+is_section = true
+
+[[pages]]
+name = "E-Commerce"
+icon = "🛒"
+is_section = true
