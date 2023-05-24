@@ -51,3 +51,7 @@ is_section = true
 [[pages]]
 path = "pages/product_description_generator.py"
 name = "Product Description Generator"
+
+[[pages]]
+path = "pages/product_listing_generator.py"
+name = "Product Listing Generator"
