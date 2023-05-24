@@ -32,6 +32,10 @@ PAGES = {
         {
             "title": "Product Description Generator",
             "description": "Generate product descriptions that rank high on searches and convert visitors into customers."
+        },
+        {
+            "title": "Product Listing Generator",
+            "description": "Generate product listings that are SEO optimized."
         }
     ],
 
