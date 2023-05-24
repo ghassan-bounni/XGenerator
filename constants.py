@@ -33,5 +33,12 @@ PAGES = {
             "title": "Product Description Generator",
             "description": "Generate product descriptions that rank high on searches and convert visitors into customers."
         }
-    ]
+    ],
+
+    "👕POD": [
+            {
+                "title": "Letter Generator",
+                "description": "Generate custom and personalized letters for any occasion."
+            }
+        ]
 }
