@@ -43,3 +43,7 @@ name = "Content Plan Generator"
 name = "E-Commerce"
 icon = "🛒"
 is_section = true
+
+[[pages]]
+path = "pages/product_description_generator.py"
+name = "Product Description Generator"
