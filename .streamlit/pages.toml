@@ -56,3 +56,12 @@ name = "Product Description Generator"
 [[pages]]
 path = "pages/product_listing_generator.py"
 name = "Product Listing Generator"
+
+[[pages]]
+name = "POD"
+icon = "👕"
+is_section = true
+
+[[pages]]
+path = "pages/letter_generator.py"
+name = "Letter Generator"
