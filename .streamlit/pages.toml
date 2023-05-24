@@ -8,6 +8,15 @@ icon = "🔎"
 name = "Explore"
 
 [[pages]]
+name = "POD"
+icon = "👕"
+is_section = true
+
+[[pages]]
+path = "pages/letter_generator.py"
+name = "Letter Generator"
+
+[[pages]]
 name = "Articles and Blogs"
 icon = "📝"
 is_section = true
@@ -26,6 +35,10 @@ name = "Blog Title Generator"
 name = "Ads and Marketing"
 icon = "📈"
 is_section = true
+
+[[pages]]
+path = "pages/ad_generator.py"
+name = "Ad Generator"
 
 [[pages]]
 path = "pages/ad_headline_generator.py"
@@ -56,12 +69,3 @@ name = "Product Description Generator"
 [[pages]]
 path = "pages/product_listing_generator.py"
 name = "Product Listing Generator"
-
-[[pages]]
-name = "POD"
-icon = "👕"
-is_section = true
-
-[[pages]]
-path = "pages/letter_generator.py"
-name = "Letter Generator"

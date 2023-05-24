@@ -1,4 +1,11 @@
 PAGES = {
+    "👕POD": [
+        {
+            "title": "Letter Generator",
+            "description": "Generate custom and personalized letters for any occasion."
+        }
+    ],
+
     "📝Articles and Blogs": [
         {
             "title": "Article Generator",
@@ -14,6 +21,10 @@ PAGES = {
         {
             "title": "Ad Headline Generator",
             "description": "Generate catchy headlines for your ads."
+        },
+        {
+            "title": "Ad Generator",
+            "description": "Generate ads that will help you sell your products."
         }
     ],
 
@@ -37,12 +48,5 @@ PAGES = {
             "title": "Product Listing Generator",
             "description": "Generate product listings that are SEO optimized."
         }
-    ],
-
-    "👕POD": [
-            {
-                "title": "Letter Generator",
-                "description": "Generate custom and personalized letters for any occasion."
-            }
-        ]
+    ]
 }
