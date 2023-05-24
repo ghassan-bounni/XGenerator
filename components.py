@@ -27,7 +27,6 @@ def page_card(title, description):
             text-decoration: none;
             display: flex;
             flex-direction: column;
-            align-items: center;  
         }
         .page:hover {
             text-decoration: none;
