@@ -11,6 +11,7 @@ footer {visibility : hidden;}
 </style>
 """, unsafe_allow_html=True)
 
+st.write("Generate catchy blog titles based on provided topic")
 form = st.form(key='my_form')
 blog_idea = form.text_input(label="Blog Idea :red[*]", placeholder="Artificial intelligence in Copywriting")
 
