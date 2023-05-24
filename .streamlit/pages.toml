@@ -27,6 +27,10 @@ icon = "📈"
 is_section = true
 
 [[pages]]
+path = "pages/ad_headline_generator.py"
+name = "Ad Headline Generator"
+
+[[pages]]
 name = "Social Media"
 icon = "📱"
 is_section = true
@@ -47,7 +51,3 @@ is_section = true
 [[pages]]
 path = "pages/product_description_generator.py"
 name = "Product Description Generator"
-
-[[pages]]
-path = "pages/ad_headline_generator.py"
-name = "Ad Headline Generator"
