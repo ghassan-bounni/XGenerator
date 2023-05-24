@@ -4,6 +4,7 @@ primaryColor="#2e379c"
 
 [[pages]]
 path = "app.py"
+icon = "🔎"
 name = "Explore"
 
 [[pages]]
