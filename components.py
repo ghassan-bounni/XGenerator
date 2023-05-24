@@ -12,7 +12,6 @@ def page_card(title, description):
             border-radius: 10px;
             padding: 10px;
             margin-block: 5px;
-            width: 200px;
             height: 200px;
         }
         
@@ -35,7 +34,6 @@ def page_card(title, description):
         }
         
         p{
-            font-size: 12px;
             color: white;
         }
     </style>
