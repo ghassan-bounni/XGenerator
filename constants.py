@@ -3,6 +3,11 @@ PAGES = {
         {
             "title": "Letter Generator",
             "description": "Generate custom and personalized letters for any occasion."
+        },
+        {
+            "title": "Greeting Card Generator",
+            "description": "Generate custom and personalized greeting cards for any occasion.",
+            "url": "https://ai-card-cover-generator.streamlit.app"
         }
     ],
 
@@ -47,6 +52,11 @@ PAGES = {
         {
             "title": "Product Listing Generator",
             "description": "Generate product listings that are SEO optimized."
+        },
+        {
+            "title": "Product Placement Generator",
+            "description": "Generate product placements that will help you sell your products.",
+            "url": "https://ai-object-placement.streamlit.app"
         }
     ]
 }

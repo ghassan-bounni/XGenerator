@@ -3,7 +3,7 @@ from st_pages import show_pages_from_config, add_page_title
 from constants import PAGES
 from components import page_card
 
-st.set_page_config(page_title="XGenerator", page_icon="🧠")
+st.set_page_config(page_title="XGenerator", page_icon="🧠", initial_sidebar_state="collapsed")
 show_pages_from_config()
 add_page_title()
 
@@ -20,4 +20,4 @@ for section in sections:
     cols = st.columns(3)
     for i, page in enumerate(PAGES[section]):
         with cols[i % 3]:
-            page_card(page["title"], page["description"])
+            page_card(page["title"], page["description"], page["url"] if "url" in page else None)

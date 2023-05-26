@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def page_card(title, description):
+def page_card(title, description, url=None):
     """A card to be used in a page"""
 
     st.markdown("""
@@ -38,10 +38,12 @@ def page_card(title, description):
     </style>
     """, unsafe_allow_html=True)
 
+    if not url:
+        url = '/'+ title.replace(' ', '%20')
     card = st.markdown(
         f"""
         <div class="card">
-            <a class="page" target="_self" href="{'/'+ title.replace(' ', '%20')}">
+            <a class="page" target="_self" href="{url}">
                     <h5>{title}</h5>
                     <p>{description}</p>
             </button>
