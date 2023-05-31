@@ -17,6 +17,10 @@ path = "pages/letter_generator.py"
 name = "Letter Generator"
 
 [[pages]]
+path = "pages/ai_upscaler.py"
+name = "AI Upscaler"
+
+[[pages]]
 name = "Articles and Blogs"
 icon = "📝"
 is_section = true

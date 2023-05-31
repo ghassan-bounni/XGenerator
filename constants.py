@@ -8,6 +8,10 @@ PAGES = {
             "title": "Greeting Card Generator",
             "description": "Generate custom and personalized greeting cards for any occasion.",
             "url": "https://ai-card-cover-generator.streamlit.app"
+        },
+        {
+            "title": "AI Upscaler",
+            "description": "Upscale your images to be print ready with AI.",
         }
     ],
 
