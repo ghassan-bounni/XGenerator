@@ -14,56 +14,58 @@ footer {visibility : hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-st.write("Upscale your images to be print ready with AI")
+st.write("Upscale your images to be print ready with AI - ")
 
 switch = st.radio("Paste Image url or Upload an Image", options=["url", "img"])
 
-img_input = st.text_input(label="Image url", placeholder="https://example.com/img1.png") if switch == "url" \
-    else st.file_uploader(label="Upload Image (aspect ratio must be 2:3 / 3:2 or 1:1)", accept_multiple_files=True, type=["png", "jpg", "jpeg"])
+img_input = st.text_input(label="Image url :red[(We only accept images with aspect ratio 2:3 / 3:2 or 1:1)]",
+                          placeholder="https://example.com/img1.png") if switch == "url"\
+    else st.file_uploader(label="Upload Image :red[(We only accept images with aspect ratio 2:3 / 3:2 or 1:1)]",
+                          accept_multiple_files=True, type=["png", "jpg", "jpeg"])
+
+use_SD = st.checkbox("Use Super Resolution (SD) API :red[(By Default we use BICUBIC Upscaling - Check to use an AI Upscaler)]", value=False)
 
 images = []
+if st.button("upscale"):
+    with st.spinner("Upscaling..."):
+        if img_input and switch == "url":
+            if not img_input.endswith((".png", ".jpg", ".jpeg")):
+                st.error("Please enter a valid image url")
+                st.stop()
 
-if img_input and switch == "url":
-    if not img_input.endswith((".png", ".jpg", ".jpeg")):
-        st.error("Please enter a valid image url")
-        st.stop()
+            img = Image.open(requests.get(img_input, stream=True).raw)
 
-    img = Image.open(requests.get(img_input, stream=True).raw)
+            aspect_ratio = img.size[0] / img.size[1]
+            if aspect_ratio not in [2 / 3, 3 / 2, 1.0]:
+                st.error("Please paste an image url with aspect ratio 2:3 / 3:2 or 1:1")
+                st.stop()
 
-    aspect_ratio = img.size[0] / img.size[1]
-    if aspect_ratio not in [2 / 3, 3 / 2, 1.0]:
-        st.error("Please paste an image url with aspect ratio 2:3 / 3:2 or 1:1")
-        st.stop()
+            st.image(img, use_column_width=True)
 
-    st.image(img, use_column_width=True)
+            images.append(upscale(img, aspect_ratio, use_SD, img_input.split("/")[-1].replace(" ", "")))
 
-    images.append(upscale(img, aspect_ratio))
+        elif img_input and switch == "img":
+            cols1 = st.columns(3)
 
-elif img_input and switch == "img":
-    cols1 = st.columns(3)
+            for i, image_file in enumerate(img_input):
+                image = Image.open(image_file)
+                aspect_ratio = image.size[0] / image.size[1]
 
-    for i, image_file in enumerate(img_input):
-        image = Image.open(image_file)
-        aspect_ratio = image.size[0] / image.size[1]
+                if aspect_ratio not in [2 / 3, 3 / 2, 1.0]:
+                    st.error("Please upload an image with aspect ratio 2:3 / 3:2 or 1:1")
+                    st.stop()
 
-        if aspect_ratio not in [2 / 3, 3 / 2, 1.0]:
-            st.error("Please upload an image with aspect ratio 2:3 / 3:2 or 1:1")
-            st.stop()
-
-        img = cols1[i % 3].image(image, use_column_width=True)
-
-        images.append(upscale(image, aspect_ratio))
-
+                img = cols1[i % 3].image(image, use_column_width=True)
+                images.append(upscale(image, aspect_ratio, use_SD, image_file.name.replace(" ", "")))
 
 if images:
-    with st.spinner("Upscaling..."):
-        st.subheader("Upscaled Images")
-        cols2 = st.columns(len(images) if len(images) < 3 else 3)
-        for i, image in enumerate(images):
-            cols2[i % 3].image(image, use_column_width=True)
+    st.subheader("Upscaled Images")
+    cols2 = st.columns(len(images) if len(images) < 3 else 3)
+    for i, image in enumerate(images):
+        cols2[i % 3].image(image, use_column_width=True)
 
-            image_bytes = io.BytesIO()
-            # Save the PIL image as bytes in the BytesIO object
-            image.save(image_bytes, format='PNG')
+        image_bytes = io.BytesIO()
+        # Save the PIL image as bytes in the BytesIO object
+        image.save(image_bytes, format='PNG')
 
-            st.download_button(label="Download", data=image_bytes, file_name=f"upscaled_image_{i}.png", mime="image/png")
+        cols2[i % 3].download_button(label="Download", data=image_bytes, file_name=f"upscaled_image_{i}.png", mime="image/png")
