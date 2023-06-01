@@ -109,6 +109,6 @@ def upscale(img: Image, aspect_ratio: float, name: str):
     os.remove(name)
     if success:
         upscaled_url = super_resolution(url)
-        return Image.open(BytesIO(requests.get(upscaled_url).content))
+        return Image.open(BytesIO(requests.get(upscaled_url, timeout=120).content))
     else:
         return None
