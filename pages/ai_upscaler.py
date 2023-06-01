@@ -50,6 +50,9 @@ if st.button("upscale"):
             if img.size < (512, 512):
                 st.error("Please paste an image url with minimum size of 512x512")
                 st.stop()
+            elif img.size > (1500, 1500):
+                st.error("Please paste an image url with maximum size of 1500x1500")
+                st.stop()
 
             st.image(img, use_column_width=True)
 
@@ -67,7 +70,10 @@ if st.button("upscale"):
                     st.stop()
 
                 if image.size < (512, 512):
-                    st.error("Please paste an image url with minimum size of 512x512")
+                    st.error("Please upload an image with minimum size of 512x512")
+                    st.stop()
+                elif image.size > (1500, 1500):
+                    st.error("Please upload an image with maximum size of 1500x1500")
                     st.stop()
 
                 img = cols1[i % 3].image(image, use_column_width=True)
