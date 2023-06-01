@@ -23,13 +23,20 @@ img_input = st.text_input(label="Image url :red[(We only accept images with aspe
     else st.file_uploader(label="Upload Image :red[(We only accept images with aspect ratio 2:3 / 3:2 or 1:1)]",
                           accept_multiple_files=True, type=["png", "jpg", "jpeg"])
 
-use_SD = st.checkbox("Use Super Resolution (SD) API :red[(By Default we use BICUBIC Upscaling - Check to use an AI Upscaler)]", value=False)
-
 images = []
 if st.button("upscale"):
     with st.spinner("Upscaling..."):
         if img_input and switch == "url":
-            if not img_input.endswith((".png", ".jpg", ".jpeg")):
+
+            if str.strip(img_input) == "":
+                st.error("Please enter a valid image url")
+                st.stop()
+
+            if img_input.startswith("https://drive.google.com"):
+                file_name = img_input.split("/")[-1].replace(" ", "")
+                img_input = "https://drive.google.com/uc?export=download&id=" + img_input.split("/")[-2]
+
+            elif not img_input.endswith((".png", ".jpg", ".jpeg")):
                 st.error("Please enter a valid image url")
                 st.stop()
 
@@ -40,9 +47,13 @@ if st.button("upscale"):
                 st.error("Please paste an image url with aspect ratio 2:3 / 3:2 or 1:1")
                 st.stop()
 
+            if img.size < (512, 512):
+                st.error("Please paste an image url with minimum size of 512x512")
+                st.stop()
+
             st.image(img, use_column_width=True)
 
-            images.append(upscale(img, aspect_ratio, use_SD, img_input.split("/")[-1].replace(" ", "")))
+            images.append(upscale(img, aspect_ratio, file_name))
 
         elif img_input and switch == "img":
             cols1 = st.columns(3)
@@ -55,8 +66,12 @@ if st.button("upscale"):
                     st.error("Please upload an image with aspect ratio 2:3 / 3:2 or 1:1")
                     st.stop()
 
+                if image.size < (512, 512):
+                    st.error("Please paste an image url with minimum size of 512x512")
+                    st.stop()
+
                 img = cols1[i % 3].image(image, use_column_width=True)
-                images.append(upscale(image, aspect_ratio, use_SD, image_file.name.replace(" ", "")))
+                images.append(upscale(image, aspect_ratio, image_file.name.replace(" ", "")))
 
 if images:
     st.subheader("Upscaled Images")

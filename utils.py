@@ -97,24 +97,18 @@ def super_resolution(url):
     return response["output"]
 
 
-def upscale(img: Image, aspect_ratio: float, use_sd: bool, name: str):
-    if use_sd:
-        ratio_to_size = {
-            2 / 3: (600, 900),
-            3 / 2: (900, 600),
-            1.0: (750, 750)
-        }
-        img = img.resize(ratio_to_size[aspect_ratio], resample=Image.BICUBIC)
-        img.save(name)
-        success, url = upload_file(file_name=name)
-        os.remove(name)
-        if success:
-            upscaled_url = super_resolution(url)
-            return Image.open(BytesIO(requests.get(upscaled_url).content))
+def upscale(img: Image, aspect_ratio: float, name: str):
+    ratio_to_size = {
+        2 / 3: (600, 900),
+        3 / 2: (900, 600),
+        1.0: (750, 750)
+    }
+    img = img.resize(ratio_to_size[aspect_ratio], resample=Image.BICUBIC)
+    img.save(name)
+    success, url = upload_file(file_name=name)
+    os.remove(name)
+    if success:
+        upscaled_url = super_resolution(url)
+        return Image.open(BytesIO(requests.get(upscaled_url).content))
     else:
-        ratio_to_size = {
-            2 / 3: (1200, 1800),
-            3 / 2: (1800, 1200),
-            1.0: (1500, 1500)
-        }
-        return img.resize(ratio_to_size[aspect_ratio], resample=Image.BICUBIC)
+        return None
