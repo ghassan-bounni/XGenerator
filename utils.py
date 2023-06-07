@@ -7,6 +7,8 @@ import requests
 from PIL import Image
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
+import soundfile as sf
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 load_dotenv()
 
@@ -112,3 +114,85 @@ def upscale(img: Image, aspect_ratio: float, name: str):
         return Image.open(BytesIO(requests.get(upscaled_url, timeout=120).content))
     else:
         return None
+
+
+def check_audio_length(audio):
+    audio_data, sample_rate = sf.read(audio)
+    duration_seconds = len(audio_data) / sample_rate
+    return 60 > duration_seconds > 30
+
+
+def check_cloned_voice(voice_name: str):
+    headers = {
+        "accept": "application/json",
+        "AUTHORIZATION": f"Bearer {os.getenv('PLAY_HT_SECRET_KEY')}",
+        "X-USER-ID": os.getenv('PLAY_HT_USER_ID')
+    }
+
+    response = requests.get(os.environ["PLAY_HT_LIST_CLONED_VOICES_URL"], headers=headers)
+
+    while response.status_code != 200:
+        response = requests.get(os.environ["PLAY_HT_LIST_CLONED_VOICES_URL"], headers=headers)
+
+    if not response.json():
+        return None
+
+    return next((voice["id"] for voice in response.json() if voice["name"] == voice_name), None)
+
+
+def clone_voice(audio: UploadedFile, voice_name: str):
+    with open(audio.name, "wb") as f:
+        f.write(audio.getvalue())
+
+    with open(audio.name, "rb") as audiofile:
+        files = {"sample_file": (audio.name, audiofile, "audio/wav")}
+        payload = {"voice_name": voice_name}
+        headers = {
+            "accept": "application/json",
+            "AUTHORIZATION": "Bearer " + os.environ["PLAY_HT_SECRET_KEY"],
+            "X-USER-ID": os.environ["PLAY_HT_USER_ID"]
+        }
+
+        response = requests.post(os.environ["PLAY_HT_VOICE_CLONE_URL"], data=payload, files=files, headers=headers)
+
+        while response.status_code != 201:
+            response = requests.post(os.environ["PLAY_HT_VOICE_CLONE_URL"], data=payload, files=files, headers=headers)
+
+    os.remove("./" + audio.name)
+
+    return response.json()["id"]
+
+
+def script_to_audio(script: str, voice_id: str):
+    payload = {
+        "text": script,
+        "voice": voice_id if voice_id else "larry",
+        "quality": "high",
+        "output_format": "mp3",
+        "speed": 0.9,
+        "sample_rate": 24000,
+    }
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "AUTHORIZATION": f"Bearer {os.getenv('PLAY_HT_SECRET_KEY')}",
+        "X-USER-ID": os.getenv('PLAY_HT_USER_ID')
+    }
+
+    response = requests.post(os.environ["SCRIPT_AUDIO_CONVERT_URL"], json=payload, headers=headers).json()
+
+    while not response["output"]:
+        url = response["_links"][0]["href"]
+        headers = {
+            "accept": "application/json",
+            "AUTHORIZATION": f"Bearer {os.getenv('PLAY_HT_SECRET_KEY')}",
+            "X-USER-ID": os.getenv('PLAY_HT_USER_ID')
+        }
+
+        time.sleep(3)
+        response = requests.get(url, headers=headers).json()
+
+    with open("audio.mp3", "wb") as f:
+        f.write(requests.get(response["output"]["url"], timeout=120).content)
+    return "audio.mp3"

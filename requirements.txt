@@ -1,8 +1,9 @@
 python-dotenv==1.0.0
 Requests==2.31.0
 st_pages==0.4.1
-streamlit==1.22.0
+streamlit==1.23.1
 streamlit_extras==0.2.7
 Pillow~=9.5.0
-boto3~=1.26.143
-botocore~=1.29.143
+boto3==1.26.148
+botocore==1.29.148
+soundfile~=0.12.1
