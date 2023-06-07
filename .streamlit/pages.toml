@@ -62,6 +62,10 @@ path = "pages/content_plan_generator.py"
 name = "Content Plan Generator"
 
 [[pages]]
+path = "pages/youtube_script_audio_generator.py"
+name = "Youtube Script Audio Generator"
+
+[[pages]]
 name = "E-Commerce"
 icon = "🛒"
 is_section = true

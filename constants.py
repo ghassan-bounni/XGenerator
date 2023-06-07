@@ -45,6 +45,10 @@ PAGES = {
         {
             "title": "Content Plan Generator",
             "description": "Generate a social media content plan that will help you create engaging content for your audience."
+        },
+        {
+            "title": "Youtube Script Audio Generator",
+            "description": "Generate audio scripts for your Youtube videos."
         }
     ],
 
