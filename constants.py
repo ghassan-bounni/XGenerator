@@ -12,6 +12,10 @@ PAGES = {
         {
             "title": "AI Upscaler",
             "description": "Upscale your images to be print ready with AI.",
+        },
+        {
+            "title": "ArtDrive",
+            "description": "Create artistic images of different kinds of vehicles.",
         }
     ],
 
@@ -66,5 +70,22 @@ PAGES = {
             "description": "Generate product placements that will help you sell your products.",
             "url": "https://ai-object-placement.streamlit.app"
         }
+    ]
+}
+
+# car app
+car_style_dict = {
+    'Vibrant': [
+        'art of a [color] [year] [brand] [model] [background], colorful, high quality, highly detailed, high contrast, in the style of Pascale Campion',
+        'digital art of a [color] [year] [brand] [model] [background], high quality, highly detailed, in the style of James Gilleard'
+    ],
+    'Origami': [
+        'tiny cute [color] [year] [brand] [model] [background], origami art, soft smooth lighting, soft colors, 100mm lens'
+    ],
+    'Black-and-white': [
+        'art of a [color] [year] [brand] [model] [background], Black and white, high quality, highly detailed, high contrast, in the style of Pascale Campion',
+        'art of a [color] [year] [brand] [model] [background], messy, monochromatic, comic, dark, high quality, highly detailed, high contrast'
+        ', in the style of Yoji Shinkawa',
+        'a [color] [year] [brand] [model] [background], outline, sketch, line art'
     ]
 }

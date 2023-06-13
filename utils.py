@@ -1,5 +1,6 @@
 import os
 import logging
+import random
 import time
 from io import BytesIO
 import boto3
@@ -9,6 +10,7 @@ from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 import soundfile as sf
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+from constants import car_style_dict
 
 load_dotenv()
 
@@ -196,3 +198,112 @@ def script_to_audio(script: str, voice_id: str):
     with open("audio.mp3", "wb") as f:
         f.write(requests.get(response["output"]["url"], timeout=120).content)
     return "audio.mp3"
+
+# car app
+def prepare_prompt(brand, model, year, style, color = None, background = None):
+    # replace all the variables in the prompt,
+    # the prompt is randomly selected from the list of prompts associated with the style
+    # the prompts are found in constants file
+
+    prompt = random.choice(car_style_dict[style])
+
+    prompt = prompt.replace("[brand]",brand)\
+        .replace("[model]",model)\
+        .replace("[year]",year if year else '')\
+        .replace("[color]", color if color else '')\
+        .replace("[background]", ", " + background + " in the background" if background else '')\
+        .replace("  ", " ")\
+        .replace(" ,", ",")
+
+    return prompt
+
+
+def generate_sd_img(prompt: str, width: int, height: int):
+    """
+    :param prompt: prompt to be used for generating the image
+    :param width: width of the image to be generated
+    :param height: height of the image to be generated
+    :return: urls of generated images
+    """
+
+    # generate image using sd api
+    json = {
+        "key": os.environ["SD_API_KEY"],
+        "model_id": os.environ["SD_MODEL_ID"],
+        "samples": 3,
+        "prompt": prompt,
+        "num_inference_steps": 31,
+        "seed": "null",
+        "guidance_scale": 7,
+        "width": width,
+        "height": height,
+        "scheduler": "EulerAncestralDiscreteScheduler",
+        "enhance_prompt": "no",
+        "webhook": "",
+        "track_id": "",
+    }
+    response = requests.post(os.environ["SD_TEXT2IMG_URL"], json= json, timeout=200).json()
+    status = response["status"]
+
+    if status == "success":
+        return response["output"]
+    else:
+        res_id = response["id"]
+        while response["status"] != "success":
+            response = requests.post(
+                os.environ["SD_FETCH_URL"],
+                json={"key": os.environ["SD_API_KEY"], "request_id": res_id},
+                timeout=200,
+            ).json()
+        return response["output"]
+
+
+def generate_sd_controlnet_img(prompt: str, width: int, height: int, init_img_url: str):
+    """
+    :param prompt: prompt to be used for generating the image
+    :param width: width of the image to be generated
+    :param height: height of the image to be generated
+    :param init_img_url: url of the image to be used as init image
+    :return: urls of generated images
+    """
+    # generate controlnet image using sd api
+    json = {
+    "key": os.environ["SD_API_KEY"],
+    "controlnet_model": "canny",
+    "controlnet_type": "canny",
+    "model_id": os.environ["SD_MODEL_ID"],
+    "auto_hint": "yes",
+    "guess_mode": "no",
+    "prompt": prompt,
+    "negative_prompt": "",
+    "init_image": init_img_url,
+    "width": width,
+    "height": height,
+    "samples": 3,
+    "scheduler": "EulerAncestralDiscreteScheduler",
+    "num_inference_steps": 31,
+    "safety_checker": "no",
+    "enhance_prompt": "yes",
+    "guidance_scale": 7,
+    "strength": 1,
+    "tomesd": "yes",
+    "use_karras_sigmas": "yes",
+    "vae": "null",
+    "seed": "null",
+    "webhook": "",
+    "track_id": ""
+}
+    response = requests.post(os.environ["SD_CONTROLNET_URL"], json=json, timeout=200).json()
+    status = response["status"]
+
+    if status == "success":
+        return response["output"]
+    else:
+        res_id = response["id"]
+        while response["status"] != "success":
+            response = requests.post(
+                os.environ["SD_FETCH_URL"],
+                json={"key": os.environ["SD_API_KEY"], "request_id": res_id},
+                timeout=200,
+            ).json()
+        return response["output"]
