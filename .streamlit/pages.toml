@@ -21,6 +21,10 @@ path = "pages/ai_upscaler.py"
 name = "AI Upscaler"
 
 [[pages]]
+path = "pages/art_drive.py"
+name = "ArtDrive"
+
+[[pages]]
 name = "Articles and Blogs"
 icon = "📝"
 is_section = true
