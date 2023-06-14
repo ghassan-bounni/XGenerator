@@ -242,7 +242,14 @@ def generate_sd_img(prompt: str, width: int, height: int):
         "webhook": "",
         "track_id": "",
     }
-    response = requests.post(os.environ["SD_TEXT2IMG_URL"], json= json, timeout=200).json()
+    status = None
+    response = None
+
+    while status != 200:
+        response = requests.post(os.environ["SD_TEXT2IMG_URL"], json=json, timeout=200)
+        status = response.status_code
+
+    response = response.json()
     status = response["status"]
 
     if status == "success":
@@ -293,7 +300,14 @@ def generate_sd_controlnet_img(prompt: str, width: int, height: int, init_img_ur
     "webhook": "",
     "track_id": ""
 }
-    response = requests.post(os.environ["SD_CONTROLNET_URL"], json=json, timeout=200).json()
+    status = None
+    response = None
+
+    while status != 200:
+        response = requests.post(os.environ["SD_CONTROLNET_URL"], json=json, timeout=200).json()
+        status = response.status_code
+
+    response = response.json()
     status = response["status"]
 
     if status == "success":
