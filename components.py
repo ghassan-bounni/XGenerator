@@ -46,7 +46,7 @@ def page_card(title, description, url=None):
             <a class="page" target="_self" href="{url}">
                     <h5>{title}</h5>
                     <p>{description}</p>
-            </button>
+            </a>
         </div>
         """,
         unsafe_allow_html=True
