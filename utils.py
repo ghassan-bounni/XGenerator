@@ -304,7 +304,7 @@ def generate_sd_controlnet_img(prompt: str, width: int, height: int, init_img_ur
     response = None
 
     while status != 200:
-        response = requests.post(os.environ["SD_CONTROLNET_URL"], json=json, timeout=200).json()
+        response = requests.post(os.environ["SD_CONTROLNET_URL"], json=json, timeout=200)
         status = response.status_code
 
     response = response.json()
