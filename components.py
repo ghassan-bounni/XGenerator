@@ -4,7 +4,8 @@ import streamlit as st
 def page_card(title, description, url=None):
     """A card to be used in a page"""
 
-    st.markdown("""
+    st.markdown(
+        """
     <style>
         .card {
             /* Add shadows to create the "card" effect */
@@ -36,10 +37,12 @@ def page_card(title, description, url=None):
             color: white;
         }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     if not url:
-        url = '/'+ title.replace(' ', '%20')
+        url = "/" + title.replace(" ", "%20")
     card = st.markdown(
         f"""
         <div class="card">
@@ -49,7 +52,7 @@ def page_card(title, description, url=None):
             </a>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     return card

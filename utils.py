@@ -17,20 +17,18 @@ load_dotenv()
 
 def generate(prompt):
     headers = {
-        'Authorization': f'Bearer {os.environ["OPENAI_API_KEY"]}',
-        'Content-Type': 'application/json'
+        "Authorization": f'Bearer {os.environ["OPENAI_API_KEY"]}',
+        "Content-Type": "application/json",
     }
 
     payload = {
-        'model': 'text-davinci-003',
-        'prompt': prompt,
-        'max_tokens': 1500,
+        "model": "text-davinci-003",
+        "prompt": prompt,
+        "max_tokens": 1500,
     }
 
     response = requests.post(
-        os.environ["OPENAI_API_URL"],
-        headers=headers,
-        json=payload
+        os.environ["OPENAI_API_URL"], headers=headers, json=payload, timeout=120
     )
 
     api_response = response.json()
@@ -59,7 +57,9 @@ def upload_file(file_name, object_name=None):
     )
     try:
         _ = s3_client.upload_file(file_name, os.environ["S3_BUCKET_NAME"], object_name)
-        s3_url = f"https://{os.environ['S3_BUCKET_NAME']}.s3.amazonaws.com/{object_name}"
+        s3_url = (
+            f"https://{os.environ['S3_BUCKET_NAME']}.s3.amazonaws.com/{object_name}"
+        )
     except ClientError as error:
         logging.error(error)
         return False, None
@@ -78,9 +78,14 @@ def super_resolution(url):
                 "url": url,
                 "scale": 2,
                 "webhook": None,
-                "face_enhance": False
+                "face_enhance": False,
             }
-            response = requests.post(os.environ["SD_UPSCALE_URL"], json=payload, headers={"Content-Type": "application/json"}, timeout=120).json()
+            response = requests.post(
+                os.environ["SD_UPSCALE_URL"],
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=120,
+            ).json()
             response_status = response["status"]
             response_id = response["id"] if response_status != "failed" else None
         else:
@@ -88,25 +93,16 @@ def super_resolution(url):
             time.sleep(5)
             response = requests.get(
                 os.environ["SD_FETCH_URL"],
-                json={
-                    "key": os.environ["SD_API_KEY"],
-                    "request_id": response_id
-                },
-                headers={
-                    "Content-Type": "application/json"
-                },
-                timeout=120
+                json={"key": os.environ["SD_API_KEY"], "request_id": response_id},
+                headers={"Content-Type": "application/json"},
+                timeout=120,
             ).json()
             response_status = response["status"]
     return response["output"]
 
 
-def upscale(img: Image, aspect_ratio: float, name: str):
-    ratio_to_size = {
-        2 / 3: (600, 900),
-        3 / 2: (900, 600),
-        1.0: (750, 750)
-    }
+def upscale(img: Image.Image, aspect_ratio: float, name: str):
+    ratio_to_size = {2 / 3: (600, 900), 3 / 2: (900, 600), 1.0: (750, 750)}
     img = img.resize(ratio_to_size[aspect_ratio], resample=Image.BICUBIC)
     img.save(name)
     success, url = upload_file(file_name=name)
@@ -128,18 +124,24 @@ def check_cloned_voice(voice_name: str):
     headers = {
         "accept": "application/json",
         "AUTHORIZATION": f"Bearer {os.getenv('PLAY_HT_SECRET_KEY')}",
-        "X-USER-ID": os.getenv('PLAY_HT_USER_ID')
+        "X-USER-ID": os.getenv("PLAY_HT_USER_ID"),
     }
 
-    response = requests.get(os.environ["PLAY_HT_LIST_CLONED_VOICES_URL"], headers=headers)
+    response = requests.get(
+        os.environ["PLAY_HT_LIST_CLONED_VOICES_URL"], headers=headers, timeout=120
+    )
 
     while response.status_code != 200:
-        response = requests.get(os.environ["PLAY_HT_LIST_CLONED_VOICES_URL"], headers=headers)
+        response = requests.get(
+            os.environ["PLAY_HT_LIST_CLONED_VOICES_URL"], headers=headers, timeout=120
+        )
 
     if not response.json():
         return None
 
-    return next((voice["id"] for voice in response.json() if voice["name"] == voice_name), None)
+    return next(
+        (voice["id"] for voice in response.json() if voice["name"] == voice_name), None
+    )
 
 
 def clone_voice(audio: UploadedFile, voice_name: str):
@@ -152,13 +154,25 @@ def clone_voice(audio: UploadedFile, voice_name: str):
         headers = {
             "accept": "application/json",
             "AUTHORIZATION": "Bearer " + os.environ["PLAY_HT_SECRET_KEY"],
-            "X-USER-ID": os.environ["PLAY_HT_USER_ID"]
+            "X-USER-ID": os.environ["PLAY_HT_USER_ID"],
         }
 
-        response = requests.post(os.environ["PLAY_HT_VOICE_CLONE_URL"], data=payload, files=files, headers=headers)
+        response = requests.post(
+            os.environ["PLAY_HT_VOICE_CLONE_URL"],
+            data=payload,
+            files=files,
+            headers=headers,
+            timeout=120,
+        )
 
         while response.status_code != 201:
-            response = requests.post(os.environ["PLAY_HT_VOICE_CLONE_URL"], data=payload, files=files, headers=headers)
+            response = requests.post(
+                os.environ["PLAY_HT_VOICE_CLONE_URL"],
+                data=payload,
+                files=files,
+                headers=headers,
+                timeout=120,
+            )
 
     os.remove("./" + audio.name)
 
@@ -179,41 +193,52 @@ def script_to_audio(script: str, voice_id: str):
         "accept": "application/json",
         "content-type": "application/json",
         "AUTHORIZATION": f"Bearer {os.getenv('PLAY_HT_SECRET_KEY')}",
-        "X-USER-ID": os.getenv('PLAY_HT_USER_ID')
+        "X-USER-ID": os.getenv("PLAY_HT_USER_ID"),
     }
 
-    response = requests.post(os.environ["SCRIPT_AUDIO_CONVERT_URL"], json=payload, headers=headers).json()
+    response = requests.post(
+        os.environ["SCRIPT_AUDIO_CONVERT_URL"],
+        json=payload,
+        headers=headers,
+        timeout=120,
+    ).json()
 
     while not response["output"]:
         url = response["_links"][0]["href"]
         headers = {
             "accept": "application/json",
             "AUTHORIZATION": f"Bearer {os.getenv('PLAY_HT_SECRET_KEY')}",
-            "X-USER-ID": os.getenv('PLAY_HT_USER_ID')
+            "X-USER-ID": os.getenv("PLAY_HT_USER_ID"),
         }
 
         time.sleep(3)
-        response = requests.get(url, headers=headers).json()
+        response = requests.get(url, headers=headers, timeout=120).json()
 
     with open("audio.mp3", "wb") as f:
         f.write(requests.get(response["output"]["url"], timeout=120).content)
     return "audio.mp3"
 
+
 # car app
-def prepare_prompt(brand, model, year, style, color = None, background = None):
+def prepare_prompt(brand, model, year, style, color=None, background=None):
     # replace all the variables in the prompt,
     # the prompt is randomly selected from the list of prompts associated with the style
     # the prompts are found in constants file
 
     prompt = random.choice(car_style_dict[style])
 
-    prompt = prompt.replace("[brand]",brand)\
-        .replace("[model]",model)\
-        .replace("[year]",year if year else '')\
-        .replace("[color]", color if color else '')\
-        .replace("[background]", ", " + background + " in the background" if background else '')\
-        .replace("  ", " ")\
+    prompt = (
+        prompt.replace("[brand]", brand)
+        .replace("[model]", model)
+        .replace("[year]", year if year else "")
+        .replace("[color]", color if color else "")
+        .replace(
+            "[background]",
+            ", " + background + " in the background" if background else "",
+        )
+        .replace("  ", " ")
         .replace(" ,", ",")
+    )
 
     return prompt
 
@@ -254,15 +279,15 @@ def generate_sd_img(prompt: str, width: int, height: int):
 
     if status == "success":
         return response["output"]
-    else:
-        res_id = response["id"]
-        while response["status"] != "success":
-            response = requests.post(
-                os.environ["SD_FETCH_URL"],
-                json={"key": os.environ["SD_API_KEY"], "request_id": res_id},
-                timeout=200,
-            ).json()
-        return response["output"]
+
+    res_id = response["id"]
+    while response["status"] != "success":
+        response = requests.post(
+            os.environ["SD_FETCH_URL"],
+            json={"key": os.environ["SD_API_KEY"], "request_id": res_id},
+            timeout=200,
+        ).json()
+    return response["output"]
 
 
 def generate_sd_controlnet_img(prompt: str, width: int, height: int, init_img_url: str):
@@ -275,36 +300,38 @@ def generate_sd_controlnet_img(prompt: str, width: int, height: int, init_img_ur
     """
     # generate controlnet image using sd api
     json = {
-    "key": os.environ["SD_API_KEY"],
-    "controlnet_model": "canny",
-    "controlnet_type": "canny",
-    "model_id": os.environ["SD_MODEL_ID"],
-    "auto_hint": "yes",
-    "guess_mode": "no",
-    "prompt": prompt,
-    "negative_prompt": "",
-    "init_image": init_img_url,
-    "width": width,
-    "height": height,
-    "samples": 3,
-    "scheduler": "EulerAncestralDiscreteScheduler",
-    "num_inference_steps": 31,
-    "safety_checker": "no",
-    "enhance_prompt": "yes",
-    "guidance_scale": 7,
-    "strength": 1,
-    "tomesd": "yes",
-    "use_karras_sigmas": "yes",
-    "vae": "null",
-    "seed": "null",
-    "webhook": "",
-    "track_id": ""
-}
+        "key": os.environ["SD_API_KEY"],
+        "controlnet_model": "canny",
+        "controlnet_type": "canny",
+        "model_id": os.environ["SD_MODEL_ID"],
+        "auto_hint": "yes",
+        "guess_mode": "no",
+        "prompt": prompt,
+        "negative_prompt": "",
+        "init_image": init_img_url,
+        "width": width,
+        "height": height,
+        "samples": 3,
+        "scheduler": "EulerAncestralDiscreteScheduler",
+        "num_inference_steps": 31,
+        "safety_checker": "no",
+        "enhance_prompt": "yes",
+        "guidance_scale": 7,
+        "strength": 1,
+        "tomesd": "yes",
+        "use_karras_sigmas": "yes",
+        "vae": "null",
+        "seed": "null",
+        "webhook": "",
+        "track_id": "",
+    }
     status = None
     response = None
 
     while status != 200:
-        response = requests.post(os.environ["SD_CONTROLNET_URL"], json=json, timeout=200)
+        response = requests.post(
+            os.environ["SD_CONTROLNET_URL"], json=json, timeout=200
+        )
         status = response.status_code
 
     response = response.json()
@@ -312,12 +339,12 @@ def generate_sd_controlnet_img(prompt: str, width: int, height: int, init_img_ur
 
     if status == "success":
         return response["output"]
-    else:
-        res_id = response["id"]
-        while response["status"] != "success":
-            response = requests.post(
-                os.environ["SD_FETCH_URL"],
-                json={"key": os.environ["SD_API_KEY"], "request_id": res_id},
-                timeout=200,
-            ).json()
-        return response["output"]
+
+    res_id = response["id"]
+    while response["status"] != "success":
+        response = requests.post(
+            os.environ["SD_FETCH_URL"],
+            json={"key": os.environ["SD_API_KEY"], "request_id": res_id},
+            timeout=200,
+        ).json()
+    return response["output"]
