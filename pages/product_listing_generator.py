@@ -37,8 +37,9 @@ if form.form_submit_button(label="Generate"):
         prompt = (
             f"Your role will be that of an {platform} expert, providing guidance to sellers on crafting effective {platform} listings."
             f" You'll produce an {platform} listing that is optimized for SEO. "
-            "Including Name of the shop, Title, Category, Product Description, Key Features, 20 key words up to 20 characters"
-            f" taking into consideration this information about the seller:  selling {product_selling} with the following description: {product_description}."
+            "Including Title, Category, Product Description, Key Features, and keywords up to 20 characters"
+            f" and taking into consideration this information about the seller:  selling {product_selling} with the following description: {product_description}."
+            f" make sure the Title and description include some of the keywords. "
         )
 
         with st.spinner("Generating..."):
